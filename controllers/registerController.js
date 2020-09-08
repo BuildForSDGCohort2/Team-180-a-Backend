@@ -21,6 +21,43 @@ exports.teacherValidationRules = () => [
   body('password', 'password is required').isLength({ min: 6 }),
 ];
 
+/**
+ * @swagger
+ *  components:
+ *    schemas:
+ *      TeacherCreateDto:
+ *        type: object
+ *        required:
+ *          - firstName
+ *          - lastName
+ *          - levelTaught
+ *          - email
+ *          - password
+ *        properties:
+ *          firstName:
+ *            type: string
+ *            description: First name of the teacher
+ *          lastName:
+ *            type: string
+ *            description: Last name of the teacher
+ *          levelTaught:
+ *            type: string
+ *            description: The school level that the teacher teaches
+ *          email:
+ *            type: string
+ *            format: email
+ *            description: Email for the teacher, needs to be unique.
+ *          password:
+ *            type: string,
+ *            description: The password the teacher will use to login.
+ *            minLength: 6
+ *        example:
+ *           firstName: John
+ *           lastName: Doe
+ *           levelTaught: Primary
+ *           email: john.doe@email.com
+ *           password: wer4590
+ */
 exports.registerTeacher = async (req, res) => {
   let { firstName, lastName, levelTaught, email, password } = req.body;
   try {

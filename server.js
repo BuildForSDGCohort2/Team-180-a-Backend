@@ -3,6 +3,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 const mongoose = require('mongoose');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+const { swaggerOptions } = require('./swaggerOptions');
 const registerRoutes = require('./routes/registerRoutes');
 const loginRoutes = require('./routes/loginRoutes');
 
@@ -15,6 +19,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(cors());
+
+const specs = swaggerJsdoc(swaggerOptions(process.env.PORT || 3000));
+app.use('/docs', swaggerUi.serve);
+app.get(
+  '/docs',
+  swaggerUi.setup(specs, {
+    explorer: true,
+  })
+);
 
 app.use(registerRoutes);
 app.use(loginRoutes);
