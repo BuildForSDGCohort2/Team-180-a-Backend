@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const registerRoutes = require('./routes/registerRoutes');
+const loginRoutes = require('./routes/loginRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(registerRoutes);
+app.use(loginRoutes);
 
 app.get('/', (req, res) => {
   res.send('Estudy: Team-180-a');
@@ -55,7 +57,7 @@ const connectToDb = async () => {
 };
 connectToDb();
 
-  // if db is connected, handle ready event , start server.
+// if db is connected, handle ready event , start server.
 app.on('ready', () => {
   const port = process.env.PORT || 3000;
   app.listen(port, () => {

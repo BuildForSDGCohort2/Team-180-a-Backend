@@ -44,7 +44,8 @@ exports.registerTeacher = async (req, res) => {
         user_role: teacher.role,
         _id: teacher._id,
       },
-      TOKEN_SECRET
+      TOKEN_SECRET,
+      { expiresIn: '24h' }
     );
     // save user data to db
     await teacher.save();
