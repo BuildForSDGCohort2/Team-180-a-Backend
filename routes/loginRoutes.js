@@ -3,10 +3,10 @@ const loginController = require('../controllers/loginController');
 const { validate } = require('../middleware/validator');
 
 router.post(
-  '/login/teacher',
-  loginController.teacherValidationRules(),
+  '/login/user',
+  loginController.userLoginValidationRules(),
   validate,
-  loginController.loginTeacher
+  loginController.loginUser
 );
 
 module.exports = router;

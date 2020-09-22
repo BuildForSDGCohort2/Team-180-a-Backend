@@ -3,9 +3,8 @@ const bCrypt = require('bcrypt');
 const { body } = require('express-validator');
 const { responseHandler } = require('../utils/responseHandler');
 const TeacherModel = require('../models/Teacher');
-const student = require("../models/Student");
-const { studentValidation } = require("../middleware/studentValidation");
-
+const Student = require('../models/Student');
+const { studentValidation } = require('../middleware/studentValidation');
 
 const { TOKEN_SECRET } = process.env;
 
@@ -110,52 +109,58 @@ exports.registerTeacher = async (req, res) => {
   }
 };
 
-
 exports.registerStudent = async (req, res) => {
-
-  let { firstName, lastName, levelTaught, email, password } = req.body;
+  const { firstName, lastName, level, email, password } = req.body;
 
   try {
-    //validate pwd, email, and username
+    // validate pwd, email, and username
     const { error } = studentValidation(req.body);
-    if (error) return responseHandler(res, error.details[0].message, 400, false, '');
+    if (error) {
+      return responseHandler(res, error.details[0].message, 400, false, '');
+    }
 
     // check if email is already in the database
-    const emailExist = await student.findOne({ email: req.body.email });
-    if (emailExist) return responseHandler(res, 'Email already taken', 409, false, '');
+    const emailExist = await Student.findOne({ email: req.body.email });
+    if (emailExist) {
+      return responseHandler(res, 'Email already taken', 409, false, '');
+    }
 
-    //hash pwd
+    // hash pwd
     const salt = bCrypt.genSaltSync(10);
-    const hashedPassword = bCrypt.hashSync(req.body.password, salt);
+    const hashedPassword = bCrypt.hashSync(password, salt);
 
     // create new and save the new user to the database
-    const newStudent = new student({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
+    const newStudent = new Student({
+      firstName,
+      lastName,
+      email,
       password: hashedPassword,
-      level: req.body.level
-
+      level,
     });
 
+    const savedStudent = await newStudent.save();
+    const data = {};
+    data.user = savedStudent;
     // create and sign json web token for this user
     const token = jwt.sign(
       {
         email,
-        user_role: student.role,
-        _id: student._id,
+        user_role: newStudent.role,
+        _id: newStudent._id,
       },
-      TOKEN_SECRET
+      TOKEN_SECRET,
+      { expiresIn: '24h' }
     );
-
-    const savedStudent = await newStudent.save();
-    const data = {};
-    data.user = student;
     data.token = token;
-    return responseHandler(res, 'Student registered successfully', 201, true, savedStudent);
-
+    return responseHandler(
+      res,
+      'Student registered successfully',
+      201,
+      true,
+      data
+    );
   } catch (err) {
-    return responseHandler(res, 'Unable to register Student', 400, false, "");
-
+    return responseHandler(res, 'Unable to register Student', 400, false, '');
   }
-}
+};
+
