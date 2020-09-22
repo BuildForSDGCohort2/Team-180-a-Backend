@@ -145,8 +145,8 @@ exports.registerStudent = async (req, res) => {
     const token = jwt.sign(
       {
         email,
-        user_role: newStudent.role,
-        _id: newStudent._id,
+        user_role: savedStudent.role,
+        _id: savedStudent._id,
       },
       TOKEN_SECRET,
       { expiresIn: '24h' }
