@@ -33,36 +33,44 @@ exports.loginUser = async (req, res) => {
         const data = {};
         data.user = user;
         data.token = token;
-        console.log(token);
-        responseHandler(res, 'User logged in successfuly', 200, true, data);
-      } else {
-        responseHandler(res, 'Invalid credentials', 401, false, '');
-      }
-    } else {
-      user = await StudentModel.findOne({ email });
-      if (!user) {
-        responseHandler(res, 'User not found', 404, false, '');
-      }
-      if (await bCrypt.compare(password, user.password)) {
-        // create and sign json web token for this user
-        const token = jwt.sign(
-          {
-            email,
-            user_role: user.role,
-            _id: user._id,
-          },
-          TOKEN_SECRET,
-          { expiresIn: '24h' }
+        return responseHandler(
+          res,
+          'User logged in successfuly',
+          200,
+          true,
+          data
         );
-        const data = {};
-        data.user = user;
-        data.token = token;
-        responseHandler(res, 'User logged in successfuly', 200, true, data);
-      } else {
-        responseHandler(res, 'Invalid credentials', 401, false, '');
       }
+      return responseHandler(res, 'Invalid credentials', 401, false, '');
     }
+    user = await StudentModel.findOne({ email });
+    if (!user) {
+      return responseHandler(res, 'User not found', 404, false, '');
+    }
+    if (await bCrypt.compare(password, user.password)) {
+      // create and sign json web token for this user
+      const token = jwt.sign(
+        {
+          email,
+          user_role: user.role,
+          _id: user._id,
+        },
+        TOKEN_SECRET,
+        { expiresIn: '24h' }
+      );
+      const data = {};
+      data.user = user;
+      data.token = token;
+      return responseHandler(
+        res,
+        'User logged in successfuly',
+        200,
+        true,
+        data
+      );
+    }
+    return responseHandler(res, 'Invalid credentials', 401, false, '');
   } catch (error) {
-    responseHandler(res, 'Something went wrong', 500, false, error);
+    return responseHandler(res, 'Something went wrong', 500, false, error);
   }
 };
