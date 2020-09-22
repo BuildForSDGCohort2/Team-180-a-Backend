@@ -66,4 +66,8 @@ router.post(
   registerController.registerTeacher
 );
 
+
+router.post('/register/student', registerController.registerStudent);
+
+
 module.exports = router;
