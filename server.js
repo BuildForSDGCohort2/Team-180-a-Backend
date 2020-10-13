@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const { swaggerOptions } = require('./swaggerOptions');
 const registerRoutes = require('./routes/registerRoutes');
+const loginRoutes = require('./routes/loginRoutes');
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.get(
 );
 
 app.use(registerRoutes);
+app.use(loginRoutes);
 
 app.get('/', (req, res) => {
   res.send('Estudy: Team-180-a');
